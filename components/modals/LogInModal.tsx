@@ -13,21 +13,24 @@ import {
   Link,
 } from "@heroui/react";
 import { LockIcon, MailIcon } from "../icons/icons";
-import { handleLogIn } from "./utils/handleLogIn";
 import PasswordRecoveryModal from "./PasswordRecoveryModal";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { LogInRequest } from "@/types/auth";
 
+type Props = {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+  onLogInSuccess: (loginreq: LogInRequest) => void;
+};
+
 export default function LogInModal({
   isOpen: controlledIsOpen,
   onOpenChange: controlledOnOpenChange,
   hideTrigger = false,
-}: {
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  hideTrigger?: boolean;
-}) {
+  onLogInSuccess,
+}: Props) {
   const disclosure = useDisclosure();
 
   const isOpen = controlledIsOpen ?? disclosure.isOpen;
@@ -39,12 +42,14 @@ export default function LogInModal({
 
   const [forgotOpen, setForgotOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const { control, handleSubmit, formState } = useForm<LogInRequest>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  const { control, handleSubmit, formState, getValues } = useForm<LogInRequest>(
+    {
+      defaultValues: {
+        email: "",
+        password: "",
+      },
+    }
+  );
   const { errors, isSubmitting } = formState;
 
   const handleOpenForgotPassword = (e?: React.MouseEvent) => {
@@ -133,19 +138,7 @@ export default function LogInModal({
               <ModalFooter>
                 <Button
                   color="primary"
-                  onPress={(e: any) => {
-                    e?.preventDefault?.();
-                    void handleSubmit(async (data) => {
-                      setServerError(null);
-                      try {
-                        await handleLogIn(data);
-                        onClose();
-                      } catch (err: any) {
-                        console.error("Login failed", err);
-                        setServerError(err?.message ?? "Login failed");
-                      }
-                    })();
-                  }}
+                  onPress={() => onLogInSuccess(getValues())}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Signing in..." : "Log In"}

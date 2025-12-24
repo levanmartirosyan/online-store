@@ -15,15 +15,26 @@ export type Option = {
 };
 
 const MySelect = (props: Props) => {
+  const {
+    options,
+    className,
+    label,
+    placeholder,
+    variant,
+    isRequired,
+    ...rest
+  } = props;
+
   return (
     <Select
-      className={props.className}
-      label={props.label}
-      placeholder={props.placeholder}
-      variant={props.variant}
-      isRequired={props.isRequired}
+      className={className}
+      label={label}
+      placeholder={placeholder}
+      variant={variant}
+      isRequired={isRequired}
+      {...(rest as any)}
     >
-      {props.options?.map((option) => (
+      {options?.map((option) => (
         <SelectItem key={option.key}>{option.label}</SelectItem>
       ))}
     </Select>

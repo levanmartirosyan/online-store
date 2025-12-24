@@ -1,7 +1,6 @@
 export const MailIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -21,7 +20,6 @@ export const MailIcon = (props: any) => {
 export const LockIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -45,7 +43,6 @@ export const LockIcon = (props: any) => {
 export const EyeSlashFilledIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -81,7 +78,6 @@ export const EyeSlashFilledIcon = (props: any) => {
 export const EyeFilledIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -105,7 +101,6 @@ export const EyeFilledIcon = (props: any) => {
 export const PersonIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -125,7 +120,6 @@ export const PersonIcon = (props: any) => {
 export const PhoneIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -145,7 +139,6 @@ export const PhoneIcon = (props: any) => {
 export const HomeIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -165,7 +158,6 @@ export const HomeIcon = (props: any) => {
 export const MapPinIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"
@@ -185,7 +177,6 @@ export const MapPinIcon = (props: any) => {
 export const LinkIcon = (props: any) => {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       focusable="false"
       height="1em"

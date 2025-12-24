@@ -36,7 +36,7 @@ export default function PasswordRecoveryModal({
     <>
       <Modal
         isOpen={isOpen}
-        placement="top-center"
+        placement="center"
         onOpenChange={onOpenChange}
         backdrop="blur"
       >

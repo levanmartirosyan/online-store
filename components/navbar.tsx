@@ -6,10 +6,20 @@ import {
   NavbarItem,
   Link,
   Button,
+  Dropdown,
+  DropdownTrigger,
+  Avatar,
+  DropdownMenu,
+  DropdownItem,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LogInModal from "@/components/modals/LogInModal";
 import RegisterModal from "./modals/RegisterModal";
+import { useUserStore } from "@/stories/User";
+import { useService } from "@/services/api/UseService";
+import { HttpMethod } from "@/enums/HttpMethod";
+import auth from "@/services/endpoints/auth";
+import { LogInRequest, RegisterRequest } from "@/types/auth";
 
 export const AcmeLogo = () => {
   return (
@@ -27,30 +37,48 @@ export const AcmeLogo = () => {
 export const NavbarComponent = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-  const [user, setUser] = useState<{
-    name?: string;
-    avatar?: string;
-    email?: string;
-  } | null>(null);
 
-  useEffect(() => {
-    // hydrate user from localStorage
+  const { setTokens, user, setUser, clearUser } = useUserStore();
+
+  const LogIn = async (loginreq: LogInRequest) => {
     try {
-      const raw = localStorage.getItem("user");
-      if (raw) setUser(JSON.parse(raw));
-    } catch (e) {
-      // ignore
-    }
+      const response = await useService(
+        auth.AuthLogin,
+        HttpMethod.POST,
+        loginreq
+      );
+      const data = response?.data;
 
-    // listen for login events
-    const onLogin = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail) setUser(detail);
-    };
-    window.addEventListener("user:login", onLogin as EventListener);
-    return () =>
-      window.removeEventListener("user:login", onLogin as EventListener);
-  }, []);
+      const token = data ?? null;
+
+      if (token) {
+        setTokens({
+          accessToken: token.access_token,
+          refreshToken: token.refresh_token,
+        });
+
+        const response = await useService(auth.Auth, HttpMethod.GET);
+        const userData = response?.data;
+        console.log("User Data:", userData);
+        if (userData) {
+          setUser(userData);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const Register = async (registerBody: RegisterRequest) => {
+    const response = await useService(
+      auth.AuthRegister,
+      HttpMethod.POST,
+      registerBody
+    );
+    const data = response?.data ?? response;
+
+    return { raw: data };
+  };
 
   return (
     <Navbar shouldHideOnScroll>
@@ -60,34 +88,52 @@ export const NavbarComponent = () => {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="/products">
             Products
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="/cart">
             Cart
           </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
         {user ? (
-          <>
-            <NavbarItem className="hidden lg:flex items-center gap-2">
-              {user.avatar ? (
-                <img
+          <NavbarContent as="div" justify="end">
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform cursor-pointer"
+                  color="secondary"
+                  name={user.firstName}
+                  size="sm"
                   src={user.avatar}
-                  alt={user.name ?? "avatar"}
-                  className="w-8 h-8 rounded-full"
                 />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-default-200" />
-              )}
-              <span className="hidden md:inline">
-                {user.name ?? user.email}
-              </span>
-            </NavbarItem>
-          </>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">{user.email}</p>
+                </DropdownItem>
+                <DropdownItem key="settings" href="/profile">
+                  My Settings
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  color="danger"
+                  onClick={() => {
+                    setTokens({ accessToken: null, refreshToken: null });
+                    clearUser();
+                  }}
+                >
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarContent>
         ) : (
           <>
             <NavbarItem className="lg:flex">
@@ -103,6 +149,10 @@ export const NavbarComponent = () => {
               <LogInModal
                 isOpen={loginOpen}
                 onOpenChange={setLoginOpen}
+                onLogInSuccess={(loginreq) => {
+                  LogIn(loginreq);
+                  setLoginOpen(false);
+                }}
                 hideTrigger
               />
             </NavbarItem>
@@ -112,8 +162,7 @@ export const NavbarComponent = () => {
                 color="primary"
                 href="#"
                 variant="flat"
-                onClick={(e) => {
-                  e.preventDefault();
+                onPress={() => {
                   setRegisterOpen(true);
                 }}
               >
@@ -122,6 +171,10 @@ export const NavbarComponent = () => {
               <RegisterModal
                 isOpen={registerOpen}
                 onOpenChange={setRegisterOpen}
+                onRegisterSuccess={(registerreq) => {
+                  Register(registerreq);
+                  setRegisterOpen(false);
+                }}
                 hideTrigger
               />
             </NavbarItem>

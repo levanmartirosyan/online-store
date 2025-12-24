@@ -1,12 +1,14 @@
-export const AuthRegister = "auth/sign_up";
-export const AuthLogin = "auth/sign_in";
-export const AuthLogout = "auth/sign_out";
-export const AuthRefresh = "auth/refresh";
-export const AuthVerifyEmail = "auth/verify_email";
-export const AuthRecovery = "auth/recovery";
-export const AuthUpdate = "auth/update";
-export const AuthChangePassword = "auth/change_password";
-export const AuthDelete = "auth/delete";
-export const AuthAll = "auth/all";
-export const AuthUser = "auth/id";
-export const Auth = "auth";
+export default {
+  AuthRegister: "auth/sign_up",
+  AuthLogin: "auth/sign_in",
+  AuthLogout: "auth/sign_out",
+  AuthRefresh: "auth/refresh",
+  AuthVerifyEmail: "auth/verify_email",
+  AuthRecovery: "auth/recovery",
+  AuthUpdate: "auth/update",
+  AuthChangePassword: "auth/change_password",
+  AuthDelete: "auth/delete",
+  AuthAll: "auth/all",
+  AuthUser: "auth/id",
+  Auth: "auth",
+};
