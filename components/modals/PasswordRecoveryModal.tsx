@@ -8,21 +8,25 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Checkbox,
   Input,
-  Link,
 } from "@heroui/react";
-import { LockIcon, MailIcon } from "../icons/icons";
+import { MailIcon } from "../icons/icons";
+import { RecoveryRequest } from "@/types/auth";
+import { Controller, useForm } from "react-hook-form";
+
+type Props = {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+  onRecoverySuccess: (recoveryBody: RecoveryRequest) => void;
+};
 
 export default function PasswordRecoveryModal({
   isOpen: controlledIsOpen,
   onOpenChange: controlledOnOpenChange,
   hideTrigger = false,
-}: {
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  hideTrigger?: boolean;
-}) {
+  onRecoverySuccess,
+}: Props) {
   const disclosure = useDisclosure();
 
   const isOpen = controlledIsOpen ?? disclosure.isOpen;
@@ -31,6 +35,14 @@ export default function PasswordRecoveryModal({
     else disclosure.onOpen();
   };
   const onOpenChange = controlledOnOpenChange ?? disclosure.onOpenChange;
+
+  const { control, handleSubmit, formState, setValue, getValues } =
+    useForm<RecoveryRequest>({
+      defaultValues: {
+        email: "",
+      },
+    });
+  const { errors, isSubmitting } = formState;
 
   return (
     <>
@@ -47,16 +59,38 @@ export default function PasswordRecoveryModal({
                 Password Recovery
               </ModalHeader>
               <ModalBody>
-                <Input
-                  endContent={
-                    <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
-                  }
-                  label="Email"
-                  variant="bordered"
+                <Controller
+                  control={control}
+                  name="email"
+                  rules={{ required: "Email is required" }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="email"
+                      endContent={
+                        <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+                      }
+                      label="Email"
+                      variant="bordered"
+                    />
+                  )}
                 />
+                {errors.email && (
+                  <p className="text-sm text-rose-600 mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onPress={onClose}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onRecoverySuccess(getValues());
+                    onClose();
+                    control._reset();
+                  }}
+                  disabled={isSubmitting}
+                >
                   Recover
                 </Button>
               </ModalFooter>

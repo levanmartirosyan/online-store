@@ -11,6 +11,7 @@ import {
   Avatar,
   DropdownMenu,
   DropdownItem,
+  addToast,
 } from "@heroui/react";
 import { useState } from "react";
 import LogInModal from "@/components/modals/LogInModal";
@@ -19,7 +20,7 @@ import { useUserStore } from "@/stories/User";
 import { useService } from "@/services/api/UseService";
 import { HttpMethod } from "@/enums/HttpMethod";
 import auth from "@/services/endpoints/auth";
-import { LogInRequest, RegisterRequest } from "@/types/auth";
+import { LogInRequest, RecoveryRequest, RegisterRequest } from "@/types/auth";
 
 export const AcmeLogo = () => {
   return (
@@ -60,6 +61,7 @@ export const NavbarComponent = () => {
         const response = await useService(auth.Auth, HttpMethod.GET);
         const userData = response?.data;
         console.log("User Data:", userData);
+
         if (userData) {
           setUser(userData);
         }
@@ -76,15 +78,38 @@ export const NavbarComponent = () => {
       registerBody
     );
     const data = response?.data ?? response;
+    if (data) {
+      addToast({
+        title: "Toast Title",
+        severity: "success",
+      });
+    }
+    return { raw: data };
+  };
 
+  const Recovery = async (recoveryBody: RecoveryRequest) => {
+    const response = await useService(
+      auth.AuthRecovery,
+      HttpMethod.POST,
+      recoveryBody
+    );
+    const data = response?.data ?? response;
+    if (data) {
+      addToast({
+        title: "Recovery Email Sent",
+        severity: "success",
+      });
+    }
     return { raw: data };
   };
 
   return (
     <Navbar shouldHideOnScroll>
       <NavbarBrand>
-        <AcmeLogo />
-        <p className="font-bold text-inherit">ACME</p>
+        <Link href="/" className="flex items-center gap-2 text-white">
+          <AcmeLogo />
+          <p className="font-bold text-inherit">BOOMMER</p>
+        </Link>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
@@ -151,6 +176,10 @@ export const NavbarComponent = () => {
                 onOpenChange={setLoginOpen}
                 onLogInSuccess={(loginreq) => {
                   LogIn(loginreq);
+                  setLoginOpen(false);
+                }}
+                onRecoverySuccess={(recoveryBody) => {
+                  Recovery(recoveryBody);
                   setLoginOpen(false);
                 }}
                 hideTrigger

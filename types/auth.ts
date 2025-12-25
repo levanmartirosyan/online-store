@@ -15,3 +15,7 @@ export type RegisterRequest = {
   avatar: string;
   gender: string;
 };
+
+export type RecoveryRequest = {
+  email: string;
+};

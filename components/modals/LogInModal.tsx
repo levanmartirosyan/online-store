@@ -16,13 +16,14 @@ import { LockIcon, MailIcon } from "../icons/icons";
 import PasswordRecoveryModal from "./PasswordRecoveryModal";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { LogInRequest } from "@/types/auth";
+import { LogInRequest, RecoveryRequest } from "@/types/auth";
 
 type Props = {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   hideTrigger?: boolean;
   onLogInSuccess: (loginreq: LogInRequest) => void;
+  onRecoverySuccess: (recoveryBody: RecoveryRequest) => void;
 };
 
 export default function LogInModal({
@@ -30,6 +31,7 @@ export default function LogInModal({
   onOpenChange: controlledOnOpenChange,
   hideTrigger = false,
   onLogInSuccess,
+  onRecoverySuccess,
 }: Props) {
   const disclosure = useDisclosure();
 
@@ -152,6 +154,7 @@ export default function LogInModal({
         isOpen={forgotOpen}
         onOpenChange={setForgotOpen}
         hideTrigger
+        onRecoverySuccess={onRecoverySuccess}
       />
     </>
   );

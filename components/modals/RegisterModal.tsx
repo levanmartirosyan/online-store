@@ -27,19 +27,22 @@ import MySelect from "../form-items/MySelect";
 import { Controller, useForm } from "react-hook-form";
 import { RegisterRequest } from "@/types/auth";
 
+type Props = {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+  onRegisterSuccess: (registerBody: RegisterRequest) => void;
+};
+
 export default function RegisterModal({
   isOpen: controlledIsOpen,
   onOpenChange: controlledOnOpenChange,
   hideTrigger = false,
   onRegisterSuccess,
-}: {
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  hideTrigger?: boolean;
-  onRegisterSuccess: (registerreq: RegisterRequest) => void;
-}) {
+}: Props) {
   const disclosure = useDisclosure();
   const [isVisible, setIsVisible] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
   const [birthDate, setBirthDate] = useState<any>(null);
 
   const getAge = (val: any) => {
@@ -93,20 +96,21 @@ export default function RegisterModal({
   ];
 
   const [serverError, setServerError] = useState<string | null>(null);
-  const { control, formState, setValue, getValues } = useForm<RegisterRequest>({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      age: 0,
-      address: "",
-      phone: "",
-      zipcode: "",
-      avatar: "",
-      gender: "",
-    },
-  });
+  const { control, handleSubmit, formState, setValue, getValues } =
+    useForm<RegisterRequest>({
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        age: 0,
+        address: "",
+        phone: "",
+        zipcode: "",
+        avatar: "",
+        gender: "",
+      },
+    });
 
   const { errors, isSubmitting } = formState;
 
@@ -406,6 +410,8 @@ export default function RegisterModal({
                       label: "text-small",
                     }}
                     isRequired
+                    checked={isAgreed}
+                    onChange={(v: any) => setIsAgreed(Boolean(v))}
                   >
                     Agree to terms and conditions
                   </Checkbox>
@@ -415,9 +421,9 @@ export default function RegisterModal({
                 <Button
                   color="primary"
                   onPress={() => {
-                    onRegisterSuccess(getValues());
+                    void handleSubmit((data) => onRegisterSuccess(data))();
                   }}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isAgreed}
                 >
                   {isSubmitting ? "Signing up..." : "Sign Up"}
                 </Button>
