@@ -11,10 +11,10 @@ import { ShoppingBasket } from "lucide-react";
 
 const ProductCard = ({ product }: { product: ProductInfo }) => {
   return (
-    <Card className="py-4 h-full flex flex-col justify-between w-[400px] max-h-[480px]">
-      <CardHeader className="pb-0 pt-2 px-4 flex-col items-start w-full gap-1">
+    <Card className=" h-full flex flex-col justify-between w-[400px] max-h-[480px]">
+      <CardHeader className="flex-col items-start w-full gap-1 px-4">
         <p className="text-tiny uppercase font-bold">{product.category.name}</p>
-        <h4 className="font-bold text-large">{product.title}</h4>
+        <h4 className="font-bold text-large min-h-[56px]">{product.title}</h4>
 
         <div className="flex align-center gap-1">
           {product.price.beforeDiscount &&
@@ -30,15 +30,18 @@ const ProductCard = ({ product }: { product: ProductInfo }) => {
           </span>
         </div>
       </CardHeader>
-      <CardBody className="overflow-visible py-2">
+      <CardBody
+        className="overflow-visible py-2 max-h-[300px] flex items-center
+      justify-center"
+      >
         <Image
           alt="Card background"
-          className=" rounded-xl object-cover"
+          className="w-full rounded-xl object-cover"
           src={product.thumbnail}
           height={240}
         />
       </CardBody>
-      <CardFooter className="pt-2 px-4 flex-col items-start w-full">
+      <CardFooter className="flex-col items-start w-full">
         <Button color="primary" variant="flat" fullWidth>
           <ShoppingBasket /> Add to Cart
         </Button>
